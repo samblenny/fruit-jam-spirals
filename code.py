@@ -44,7 +44,7 @@ for i in range(palette_size):
 tilegrid = TileGrid(bitmap, pixel_shader=palette)
 grp.append(tilegrid)
 
-def draw_spiral(a, b, h, cycles=64, oversample=2, delay_ms=1, end_pause_s=3):
+def draw_spiral(a, b, h, cycles=64, oversample=2, delay_ms=1, end_pause_s=5):
     """Draw a Hypotrochoid spiral
     a: outer circle radius in pixels
     b: inner circle radius in pixels
@@ -56,11 +56,13 @@ def draw_spiral(a, b, h, cycles=64, oversample=2, delay_ms=1, end_pause_s=3):
     """
     global bitmap
     global display
+    # Cache functions as local vars with short names to improve readability
     rad = math.radians
     sin = math.sin
     cos = math.cos
-    x0 = width / 2
-    y0 = height / 2
+    # Translate origin of graph to center of the display
+    (x0, y0) = (width / 2, height / 2)
+    # Clear the bitmap, then start drawing the hypotrochoid spiral
     bitmap.fill(0)
     for t in range(cycles * 360 * oversample):
         color = (t >> 1) & 0xff  # this cycles through all the palette colors
@@ -70,8 +72,9 @@ def draw_spiral(a, b, h, cycles=64, oversample=2, delay_ms=1, end_pause_s=3):
         if (0 <= x < width) and (0 <= y < height):
             bitmap[x, y] = color
             display.refresh()
+        # This delay controls the pen movement speed
         sleep(0.001 * delay_ms)
-    # Wait at the end so you can look at the final image for a bit
+    # This delay pauses at the end so you can see the final image
     sleep(end_pause_s)
 
 # Sleep after drawing is done to prevent supervisor from erasing display
