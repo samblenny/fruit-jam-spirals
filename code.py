@@ -11,10 +11,13 @@ import supervisor
 from time import sleep
 
 
-# Make sure display is initialized for the video mode
-width = 320
-height = 240
-color_depth = 8
+# Set LOWRES to True for 320x240 RGB332 or False for 640x480 RGB332
+LOWRES = True
+if LOWRES:
+    (width, height, color_depth) = (320, 240, 8)
+else:
+    (width, height, color_depth) = (640, 480, 8)
+# Make sure display is initialized for the requested video mode
 display = supervisor.runtime.display
 if (width, height) != (display.width, display.height):
     print("re-initializing display")
