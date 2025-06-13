@@ -47,7 +47,7 @@ for i in range(palette_size):
 tilegrid = TileGrid(bitmap, pixel_shader=palette)
 grp.append(tilegrid)
 
-def draw_spiral(a, b, h, cycles=64, oversample=2, delay_ms=1, end_pause_s=5):
+def draw_spiral(a, b, h, cycles=64, oversample=2, delay_ms=1):
     """Draw a Hypotrochoid spiral
     a: outer circle radius in pixels
     b: inner circle radius in pixels
@@ -55,11 +55,11 @@ def draw_spiral(a, b, h, cycles=64, oversample=2, delay_ms=1, end_pause_s=5):
     cycles: how many 360 degree cycles to run the equations through
     oversample: increase this to make the pixel density higher
     delay_ms: increase this to draw slower (unit: ms)
-    end_pause_s: increase this to pause for longer at the end (unit: seconds)
     """
     global bitmap
     global display
-    # Cache functions as local vars with short names to improve readability
+    global palette
+    # Alias trig functions with short names to improve equation readability
     rad = math.radians
     sin = math.sin
     cos = math.cos
@@ -67,8 +67,9 @@ def draw_spiral(a, b, h, cycles=64, oversample=2, delay_ms=1, end_pause_s=5):
     (x0, y0) = (width / 2, height / 2)
     # Clear the bitmap, then start drawing the hypotrochoid spiral
     bitmap.fill(0)
+    max_color = len(palette)
     for t in range(cycles * 360 * oversample):
-        color = (t >> 1) & 0xff  # this cycles through all the palette colors
+        color = (t // oversample) % max_color  # Cycle through all colors
         tr = rad(t/oversample)
         x = round(x0 + (a - b) * cos(tr) + h * cos((a - b) / b * tr))
         y = round(y0 + (a - b) * sin(tr) - h * sin((a - b) / b * tr))
@@ -78,11 +79,10 @@ def draw_spiral(a, b, h, cycles=64, oversample=2, delay_ms=1, end_pause_s=5):
         # This delay controls the pen movement speed
         sleep(0.001 * delay_ms)
     # This delay pauses at the end so you can see the final image
-    sleep(end_pause_s)
+    sleep(5)
 
 # Sleep after drawing is done to prevent supervisor from erasing display
 while True:
-    draw_spiral(a=110, b=12, h=11, cycles=6, delay_ms=3)
-    draw_spiral(a=160, b=80, h=10, cycles=1, delay_ms=3)
+    draw_spiral(a=110, b=12, h=11, cycles=6, oversample=3, delay_ms=3)
     draw_spiral(a=111, b=25, h=9, cycles=6, delay_ms=3)
-    draw_spiral(a=111, b=25, h=29, cycles=27)
+    draw_spiral(a=111, b=25, h=29, cycles=27, oversample=3)
