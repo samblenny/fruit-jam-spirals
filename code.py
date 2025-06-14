@@ -64,8 +64,8 @@ def init_display(width, height, color_depth):
 
 
 # Pick a video mode (comment out the one you don't want):
-#(width, height, color_depth) = (320, 240, 8)
-(width, height, color_depth) = (640, 480, 8)    # This needs board with PSRAM
+(width, height, color_depth) = (320, 240, 8)
+#(width, height, color_depth) = (640, 480, 8)    # This needs board with PSRAM
 
 # Detect if an existing display matches requested video mode
 display = supervisor.runtime.display
