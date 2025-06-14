@@ -26,13 +26,13 @@ Based on my testing, it seems like you need a board with a PSRAM chip in order
 to use 640x480 with 8-bit color depth. This is what I found when I tested the
 spiral drawing code on my Fruit Jam and my Metro RP2350 with No PSRAM:
 
-| Video Mode     | Fruit Jam | Metro RP2350 No PSRAM     |
-| -------------- | --------- | ------------------------- |
-| 320x240, 8-bit | Yes!      | Yes!                      |
-| 640x480, 8-bit | Yes!      | MemoryAllocation error :( |
+| Video Mode     | Fruit Jam | Metro RP2350 No PSRAM    |
+| -------------- | --------- | ------------------------ |
+| 320x240, 8-bit | Yes!      | Yes!                     |
+| 640x480, 8-bit | Yes!      | MemoryError exception :( |
 
-When I tried 640x480 8-bit on Metro RP2350 with No PSRAM, I got a
-MemoryAllocation exception, like this:
+When I tried 640x480 8-bit on Metro RP2350 with No PSRAM, I got a MemoryError
+exception like the one shown in this screen capture:
 
 ![screen capture showing memory allocation error](img/memory-allocation-error.png)
 
