@@ -9,6 +9,9 @@ Metro RP2350. To use the 640x480 8-bit video mode, you need a board with PSRAM.
 
 ![another multi-color spiral curve on black background](img/curve-2.png)
 
+![one more spiral but higher resolution this time](img/curve-1-640x480.png)
+
+
 Hypotrochoids are a type curve like the ones you can draw with a Spirograph.
 For more details on the math, check out the
 [Wikipedia](https://en.wikipedia.org/wiki/Hypotrochoid) or
