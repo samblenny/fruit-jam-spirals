@@ -11,42 +11,6 @@ import supervisor
 from time import sleep
 
 
-# Set LOWRES to True for 320x240 RGB332 or False for 640x480 RGB332
-LOWRES = True
-if LOWRES:
-    (width, height, color_depth) = (320, 240, 8)
-else:
-    (width, height, color_depth) = (640, 480, 8)
-# Make sure display is initialized for the requested video mode
-display = supervisor.runtime.display
-if (width, height) != (display.width, display.height):
-    print("re-initializing display")
-    displayio.release_displays()
-    gc.collect()
-    fb = picodvi.Framebuffer(width, height, clk_dp=CKP, clk_dn=CKN,
-        red_dp=D0P, red_dn=D0N, green_dp=D1P, green_dn=D1N,
-        blue_dp=D2P, blue_dn=D2N, color_depth=color_depth)
-    display = framebufferio.FramebufferDisplay(fb)
-    supervisor.runtime.display = display
-else:
-    print("using existing display")
-display.auto_refresh = False
-grp = Group(scale=1)
-display.root_group = grp
-
-# Make bitmap + palette + tilegrid so we have a canvas to draw on
-palette_size = 1 << color_depth
-bitmap = Bitmap(width, height, palette_size)
-palette = Palette(palette_size)
-for i in range(palette_size):
-    # Expand 8-bit RGB332 (i) into a 24-bit RGB888 tuple (r, g, b)
-    r = i & 0xE0
-    g = (i & 0x1C) << 3
-    b = (i & 0x03) << 6
-    palette[i] = (r, g, b)
-tilegrid = TileGrid(bitmap, pixel_shader=palette)
-grp.append(tilegrid)
-
 def draw_spiral(a, b, h, cycles=64, oversample=2, delay_ms=1):
     """Draw a Hypotrochoid spiral
     a: outer circle radius in pixels
@@ -81,7 +45,58 @@ def draw_spiral(a, b, h, cycles=64, oversample=2, delay_ms=1):
     # This delay pauses at the end so you can see the final image
     sleep(5)
 
-# Sleep after drawing is done to prevent supervisor from erasing display
+def init_display(width, height, color_depth):
+    """Initialize the picodvi display
+    Video mode compatibility (only tested these--unsure about other boards):
+    | Video Mode     | Fruit Jam | Metro RP2350 No PSRAM     |
+    | -------------- | --------- | ------------------------- |
+    | 320x240, 8-bit | Yes!      | Yes!                      |
+    | 640x480, 8-bit | Yes!      | MemoryAllocation error :( |
+    """
+    displayio.release_displays()
+    gc.collect()
+    fb = picodvi.Framebuffer(width, height, clk_dp=CKP, clk_dn=CKN,
+        red_dp=D0P, red_dn=D0N, green_dp=D1P, green_dn=D1N,
+        blue_dp=D2P, blue_dn=D2N, color_depth=color_depth)
+    display = framebufferio.FramebufferDisplay(fb)
+    supervisor.runtime.display = display
+    return display
+
+
+# Pick a video mode (comment out the one you don't want):
+#(width, height, color_depth) = (320, 240, 8)
+(width, height, color_depth) = (640, 480, 8)    # This needs board with PSRAM
+
+# Detect if an existing display matches requested video mode
+display = supervisor.runtime.display
+if (display is None) or (width, height) != (display.width, display.height):
+    # Didn't find a display configured as we need, so initialize a new one
+    try:
+        display = init_display(width, height, color_depth)
+    except MemoryError as e:
+        # Fall back to low resolution so the error message will be readable
+        display = init_display(320, 240, 8)
+        print("---\nREQUESTED VIDEO MODE NEEDS A BOARD WITH PSRAM\n---")
+        raise e
+# Use manual refresh for better performance
+display.auto_refresh = False
+grp = Group(scale=1)
+display.root_group = grp
+
+# Arrange a bitmap + palette + tilegrid so we have a canvas to draw on. The
+# pallet gets initialized with all 256 of the RGB332 colors.
+palette = Palette(256)
+bitmap = Bitmap(width, height, 256)
+for i in range(256):
+    # Expand 8-bit RGB332 (i) into a 24-bit RGB888 tuple (r, g, b)
+    r = i & 0xE0
+    g = (i & 0x1C) << 3
+    b = (i & 0x03) << 6
+    palette[i] = (r, g, b)
+tilegrid = TileGrid(bitmap, pixel_shader=palette)
+grp.append(tilegrid)
+
+# Draw stuff (includes a brief pause after each spiral is done)
 while True:
     draw_spiral(a=110, b=12, h=11, cycles=6, oversample=3, delay_ms=3)
     draw_spiral(a=111, b=25, h=9, cycles=6, delay_ms=3)
