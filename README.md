@@ -20,4 +20,19 @@ prototype board using CircuitPython 10.0.0-alpha.6 from the circuitpython.org
 Things may change by the time CircuitPython 10.0.0 is released.
 
 
+## Video Mode Board Compatibility
+
+Based on my testing, it seems like you need a board with a PSRAM chip in order
+to use 640x480 with 8-bit color depth. This is what I found when I tested the
+spiral drawing code on my Fruit Jam and my Metro RP2350 with No PSRAM:
+
+| Video Mode     | Fruit Jam | Metro RP2350 No PSRAM     |
+| -------------- | --------- | ------------------------- |
+| 320x240, 8-bit | Yes!      | Yes!                      |
+| 640x480, 8-bit | Yes!      | MemoryAllocation error :( |
+
+When I tried 640x480 8-bit on Metro RP2350 with No PSRAM, I got a
+MemoryAllocation exception, like this:
+
+![screen capture showing memory allocation error](memory-allocation-error.png)
 
