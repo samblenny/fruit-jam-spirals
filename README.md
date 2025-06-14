@@ -4,9 +4,9 @@
 
 This draws hypotrochoid spirals (like Spirograph) for Fruit Jam's DVI display.
 
-![multi-color spiral curve on black background](curve-1.png)
+![multi-color spiral curve on black background](img/curve-1.png)
 
-![another multi-color spiral curve on black background](curve-2.png)
+![another multi-color spiral curve on black background](img/curve-2.png)
 
 Hypotrochoids are a type curve like the ones you can draw with a Spirograph.
 For more details on the math, check out the
@@ -34,5 +34,5 @@ spiral drawing code on my Fruit Jam and my Metro RP2350 with No PSRAM:
 When I tried 640x480 8-bit on Metro RP2350 with No PSRAM, I got a
 MemoryAllocation exception, like this:
 
-![screen capture showing memory allocation error](memory-allocation-error.png)
+![screen capture showing memory allocation error](img/memory-allocation-error.png)
 
