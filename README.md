@@ -2,7 +2,8 @@
 <!-- SPDX-FileCopyrightText: Copyright 2025 Sam Blenny -->
 # Fruit Jam Spirals
 
-This draws hypotrochoid spirals (like Spirograph) for Fruit Jam's DVI display.
+Draw hypotrochoid spirals (like Spirograph) for picodvi display on Fruit Jam or
+Metro RP2350. To use the 640x480 8-bit video mode, you need a board with PSRAM.
 
 ![multi-color spiral curve on black background](img/curve-1.png)
 
