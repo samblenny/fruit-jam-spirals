@@ -48,10 +48,10 @@ def draw_spiral(a, b, h, cycles=64, oversample=2, delay_ms=1):
 def init_display(width, height, color_depth):
     """Initialize the picodvi display
     Video mode compatibility (only tested these--unsure about other boards):
-    | Video Mode     | Fruit Jam | Metro RP2350 No PSRAM     |
-    | -------------- | --------- | ------------------------- |
-    | 320x240, 8-bit | Yes!      | Yes!                      |
-    | 640x480, 8-bit | Yes!      | MemoryAllocation error :( |
+    | Video Mode     | Fruit Jam | Metro RP2350 No PSRAM    |
+    | -------------- | --------- | ------------------------ |
+    | 320x240, 8-bit | Yes!      | Yes!                     |
+    | 640x480, 8-bit | Yes!      | MemoryError exception :( |
     """
     displayio.release_displays()
     gc.collect()
