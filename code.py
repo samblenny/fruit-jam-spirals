@@ -48,10 +48,11 @@ def draw_spiral(a, b, h, cycles=64, oversample=2, delay_ms=1):
 def init_display(width, height, color_depth):
     """Initialize the picodvi display
     Video mode compatibility (only tested these--unsure about other boards):
-    | Video Mode     | Fruit Jam | Metro RP2350 No PSRAM    |
-    | -------------- | --------- | ------------------------ |
-    | 320x240, 8-bit | Yes!      | Yes!                     |
-    | 640x480, 8-bit | Yes!      | MemoryError exception :( |
+    | Video Mode      | Fruit Jam | Metro RP2350 No PSRAM    |
+    | --------------- | --------- | ------------------------ |
+    | 320x240, 8-bit  | Yes!      | Yes!                     |
+    | 320x240, 16-bit | Yes!      | Yes!                     |
+    | 640x480, 8-bit  | Yes!      | MemoryError exception :( |
     """
     displayio.release_displays()
     gc.collect()
@@ -64,13 +65,24 @@ def init_display(width, height, color_depth):
 
 
 # Pick a video mode (comment out the one you don't want):
-(width, height, color_depth) = (320, 240, 8)
-#(width, height, color_depth) = (640, 480, 8)    # This needs board with PSRAM
+#requested_mode = (320, 240, 8)
+requested_mode = (320, 240, 16)
+#requested_mode = (640, 480, 8)    # This needs board with PSRAM
+(width, height, color_depth) = requested_mode
 
 # Detect if an existing display matches requested video mode
 display = supervisor.runtime.display
-if (display is None) or (width, height) != (display.width, display.height):
+if display is None:
+    current_mode = None  # Metro RP2350 runtime.display may be None
+else:
+    current_mode = (
+        display.width,
+        display.height,
+        display.framebuffer.color_depth
+    )
+if requested_mode != current_mode:
     # Didn't find a display configured as we need, so initialize a new one
+    print("Re-initializing display for mode:", requested_mode)
     try:
         display = init_display(width, height, color_depth)
     except MemoryError as e:
@@ -78,6 +90,8 @@ if (display is None) or (width, height) != (display.width, display.height):
         display = init_display(320, 240, 8)
         print("---\nREQUESTED VIDEO MODE NEEDS A BOARD WITH PSRAM\n---")
         raise e
+else:
+    print("Using existing display mode:", requested_mode)
 # Use manual refresh for better performance
 display.auto_refresh = False
 grp = Group(scale=1)
